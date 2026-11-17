@@ -71,7 +71,7 @@ export function createApp({dbPath=process.env.DB_PATH||'./data/docspace.sqlite',
         const asset=staticFiles.get(path);
         if(!asset)return error(res,404,'Not found');
         const filePath=resolve(root,asset);
-        try {const data=await readFile(filePath);res.writeHead(200,{'Content-Type':mime[extname(filePath)]||'application/octet-stream','Cache-Control':asset==='index.html'?'no-cache':'public,max-age=300'});return res.end(data);}catch {return error(res,404,'Not found');}
+        try {const data=await readFile(filePath);res.writeHead(200,{'Content-Type':mime[extname(filePath)]||'application/octet-stream','Cache-Control':'no-store'});return res.end(data);}catch {return error(res,404,'Not found');}
       }
       error(res,404,'Route not found');
     }catch(e){const code=e.code===413?413:(e.code===400?400: e.message?.includes('File')||e.message?.includes('Only .txt')||e.message?.includes('Document content')||e.message?.includes('UTF')?400:500);if(code===500)console.error(e);error(res,code,code===500?'Server error':e.message);}
