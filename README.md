@@ -10,6 +10,7 @@ A deliberately focused Google Docs–inspired application. Built for the Ajaia A
 - Owner/editor/viewer document permissions. Three selectable seeded demo accounts.
 - A distinct **My documents** and **Shared with me** library view.
 - SQLite persistence with server-side permission enforcement and optimistic revision conflict handling.
+- Version history: preview previous saved revisions and restore one as a new revision.
 - Responsive interface, save feedback, validation, error handling, and API tests.
 
 ## Requirements and local setup
@@ -41,6 +42,10 @@ For production-like hosting, configure:
 5. With editor access, make a change. Switch to Alex to confirm it persisted. With viewer access, editing controls are disabled; direct API updates are also forbidden.
 
 The account selector is intentionally **simulated authentication**, not security-grade identity verification. It is suitable for demonstrating access logic, not a real production deployment.
+
+## Version history
+
+Open a document and click **History** to browse saved revisions, including who saved each version and when. Select a revision to preview its title and formatted content. Owners and editors can restore an older version; this creates a **new** revision and preserves later revisions. Viewers can inspect but not restore. Existing SQLite databases get a baseline snapshot when the app updates.
 
 ## File import
 
