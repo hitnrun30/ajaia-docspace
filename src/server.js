@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes,createHmac,timingSafeEqual } from 'node:crypto';
-import { initStore,listDocs,getDoc,createDoc,updateDoc,shareDoc,listShares } from './store.js';
+import { initStore,listDocs,getDoc,createDoc,updateDoc,shareDoc,listShares,listVersions,getVersion,restoreVersion } from './store.js';
 import { sanitizeHtml, importFile } from './sanitize.js';
 
 const root=resolve(fileURLToPath(new URL('../public/',import.meta.url)));
@@ -44,9 +44,9 @@ export function createApp({dbPath=process.env.DB_PATH||'./data/docspace.sqlite',
         const title=normalizeTitle(filename.replace(/\.(txt|md)$/i,'')||'Imported document');
         return json(res,201,{document:createDoc(db,user,title,html)});
       }
-      const docmatch=path.match(/^\/api\/documents\/(\d+)(?:\/(share|shares))?$/);
+      const docmatch=path.match(/^\/api\/documents\/(\d+)(?:\/(share|shares|versions)(?:\/(\d+)(?:\/(restore))?)?)?$/);
       if(docmatch){
-        const id=Number(docmatch[1]), sub=docmatch[2];
+        const id=Number(docmatch[1]), sub=docmatch[2], version=docmatch[3]?Number(docmatch[3]):null, versionAction=docmatch[4];
         if(!sub&&req.method==='GET'){
           const doc=getDoc(db,id,user);return doc?json(res,200,{document:doc}):error(res,404,'Document not found');
         }
@@ -56,6 +56,23 @@ export function createApp({dbPath=process.env.DB_PATH||'./data/docspace.sqlite',
           if(b.html!==undefined)changes.html=sanitizeHtml(b.html);
           const result=updateDoc(db,id,user,changes);
           return result.error==='conflict'?json(res,409,{error:'Document changed in another session. Copy your draft before reloading.',serverRevision:result.doc.revision}):result.error==='forbidden'?error(res,403,'Read-only access'):result.error==='not_found'?error(res,404,'Document not found'):json(res,200,{document:result.doc});
+        }
+        if(sub==='versions'&&version===null&&req.method==='GET'){
+          const versions=listVersions(db,id,user);
+          return versions===null?error(res,404,'Document not found'):json(res,200,{versions});
+        }
+        if(sub==='versions'&&version!==null&&versionAction===undefined&&req.method==='GET'){
+          const found=getVersion(db,id,version,user);
+          return found?json(res,200,{version:found}):error(res,404,'Version not found');
+        }
+        if(sub==='versions'&&version!==null&&versionAction==='restore'&&req.method==='POST'){
+          const b=parsedJson(await body(req));
+          if(!Number.isSafeInteger(b.revision))return error(res,400,'Revision required');
+          const result=restoreVersion(db,id,version,user,b.revision);
+          return result.error==='not_found'||result.error==='version_not_found'?error(res,404,'Version not found'):
+            result.error==='forbidden'?error(res,403,'Read-only access'):
+            result.error==='conflict'?error(res,409,'Document changed in another session. Reopen version history before restoring.'):
+            json(res,200,{document:result.doc});
         }
         if(sub==='share'&&req.method==='POST'){
           const b=parsedJson(await body(req));
