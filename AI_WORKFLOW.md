@@ -29,3 +29,6 @@ OpenAI ChatGPT (GPT-6) assisted with scope decomposition, implementation drafts,
 - The Render Free deployment uses ephemeral SQLite storage. Data can be lost after spin-down, restart, redeployment, or instance replacement; production use requires durable storage.
 
 AI accelerated construction; correctness and tradeoff accountability remain the candidate's responsibility. This note should be amended to reflect any additional manual changes or tests performed after handoff.
+## Stretch feature: version history
+
+AI-assisted implementation added immutable revision snapshots in SQLite, server-side history and restore endpoints, a preview/restore interface, and regression tests. The feature was tested using Node's built-in test runner (11 tests passing), including version recovery and permission checks. It deliberately reuses the existing authorization and optimistic-revision model rather than adding a real-time collaboration framework.
