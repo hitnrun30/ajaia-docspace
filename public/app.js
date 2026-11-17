@@ -69,6 +69,21 @@ $('historyBtn').addEventListener('click',showHistory);
 $('closeHistory').addEventListener('click',()=>$('historyModal').classList.add('hidden'));
 $('historyModal').addEventListener('click',e=>{if(e.target===$('historyModal'))$('historyModal').classList.add('hidden');});
 $('restoreVersionBtn').addEventListener('click',restoreSelectedVersion);
+async function exportCurrent(){
+ if(!state.doc)return;
+ if(state.saving){toast('Wait for the current save to finish.');return;}
+ await flush();
+ if(state.dirty){toast('Please save changes before exporting.');return;}
+ const format=$('exportFormat').value;
+ const res=await fetch(`/api/documents/${state.doc.id}/export?format=${encodeURIComponent(format)}`);
+ if(!res.ok){const response=await res.json();throw new Error(response.error||'Export failed');}
+ const blob=await res.blob(),disposition=res.headers.get('Content-Disposition')||'';
+ const name=disposition.match(/filename="([^"]+)"/)?.[1]||`document.${format}`;
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('exportBtn').addEventListener('click',()=>exportCurrent().catch(e=>toast(e.message)));
 $('newBtn').addEventListener('click',create);$('heroNew').addEventListener('click',create);$('backBtn').addEventListener('click',back);$('searchInput').addEventListener('input',renderList);
 document.querySelectorAll('[data-filter]').forEach(el=>el.addEventListener('click',async()=>{
  if(!$('editorView').classList.contains('hidden')){
