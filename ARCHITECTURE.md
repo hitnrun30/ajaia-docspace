@@ -38,3 +38,6 @@ Tests exercise creating, updating, sharing, viewer restrictions, stale revisions
 2. Add production authentication and document invitations by verified email.
 3. Improve conflict resolution and keyboard/accessibility testing.
 4. Add durable managed database storage and deployment observability.
+## Stretch feature: version history
+
+`document_versions` stores snapshots of the title and sanitized HTML for each saved revision, recording the editor and timestamp. The API restricts history reads to document collaborators and restores to owners/editors. Restore checks the current revision to avoid overwriting concurrent work and creates a new revision rather than deleting later history. Existing databases gain a baseline snapshot on startup.
