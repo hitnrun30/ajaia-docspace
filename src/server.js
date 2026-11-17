@@ -18,6 +18,26 @@ const readCookie=req=>Object.fromEntries((req.headers.cookie||'').split(';').map
 const sign=(userId,key)=>createHmac('sha256',key).update(String(userId)).digest('hex');
 function currentUser(req,key){const c=readCookie(req).demo_user;if(!c)return 1;const [id,sig]=c.split('.');if(!/^[1-3]$/.test(id)||!/^[a-f0-9]{64}$/.test(sig||''))return 1;return timingSafeEqual(Buffer.from(sig),Buffer.from(sign(id,key)))?Number(id):1;}
 function normalizeTitle(s){if(typeof s!=='string'||!s.trim()||s.trim().length>120)throw Object.assign(new Error('Title must be 1–120 characters'),{code:400});return s.trim();}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function plainText(html){
+  return html.replace(/<\s*li\b[^>]*>/gi,'- ').replace(/<\s*br\s*\/?>/gi,'\n')
+    .replace(/<\/(?:p|div|h[1-6]|li|ul|ol)>/gi,'\n').replace(/<[^>]*>/g,'')
+    .replace(/&(#x[0-9a-f]+|#[0-9]+|amp|lt|gt|quot|apos|nbsp);/gi,(match,code)=>{
+      const common={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' '};
+      if(code[0]!=='#')return common[code.toLowerCase()]??match;
+      const n=code[1].toLowerCase()==='x'?parseInt(code.slice(2),16):parseInt(code.slice(1),10);
+      return n>0&&n<=0x10ffff&&!(n>=0xd800&&n<=0xdfff)?String.fromCodePoint(n):'';
+    }).replace(/\n{3,}/g,'\n\n').trim();
+}
+function exportDocument(res,doc,format){
+  const filename=(doc.title.replace(/[\x00-\x1f\x7f<>:"/\\|?*]+/g,'-').replace(/\.+$/,'').trim().slice(0,80)||'document')+'.'+format;
+  const isHtml=format==='html';
+  const output=isHtml?`<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(doc.title)}</title></head><body><h1>${escapeHtml(doc.title)}</h1>${doc.html}</body></html>`:plainText(doc.html);
+  res.writeHead(200,{'Content-Type':isHtml?'text/html; charset=utf-8':'text/plain; charset=utf-8',
+    'Content-Disposition':`attachment; filename="${filename}"`,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+  res.end(output);
+}
+
 export function createApp({dbPath=process.env.DB_PATH||'./data/docspace.sqlite',secret=process.env.SESSION_SECRET||randomBytes(32).toString('hex')}={}){
   const db=initStore(dbPath);
   const listener=async(req,res)=>{
@@ -44,11 +64,18 @@ export function createApp({dbPath=process.env.DB_PATH||'./data/docspace.sqlite',
         const title=normalizeTitle(filename.replace(/\.(txt|md)$/i,'')||'Imported document');
         return json(res,201,{document:createDoc(db,user,title,html)});
       }
-      const docmatch=path.match(/^\/api\/documents\/(\d+)(?:\/(share|shares|versions)(?:\/(\d+)(?:\/(restore))?)?)?$/);
+      const docmatch=path.match(/^\/api\/documents\/(\d+)(?:\/(share|shares|versions|export)(?:\/(\d+)(?:\/(restore))?)?)?$/);
       if(docmatch){
         const id=Number(docmatch[1]), sub=docmatch[2], version=docmatch[3]?Number(docmatch[3]):null, versionAction=docmatch[4];
         if(!sub&&req.method==='GET'){
           const doc=getDoc(db,id,user);return doc?json(res,200,{document:doc}):error(res,404,'Document not found');
+        }
+        if(sub==='export'&&req.method==='GET'){
+          const doc=getDoc(db,id,user);
+          if(!doc)return error(res,404,'Document not found');
+          const format=url.searchParams.get('format')||'html';
+          if(!['html','txt'].includes(format))return error(res,400,'Export format must be html or txt');
+          return exportDocument(res,doc,format);
         }
         if(!sub&&req.method==='PUT'){
           const b=parsedJson(await body(req));if(!Number.isSafeInteger(b.revision))return error(res,400,'Revision required');
