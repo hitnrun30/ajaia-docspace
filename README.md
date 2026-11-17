@@ -46,6 +46,13 @@ The account selector is intentionally **simulated authentication**, not security
 
 Use **Import document**. The app accepts `.txt` and `.md` UTF-8 text only. Markdown support is deliberately limited to headings, paragraphs, numbered/bulleted lists, bold, and italic; it is not a full CommonMark parser. `.docx` is not supported in this timebox. Imported files become editable database records.
 
+## Live demo
+
+**Application:** https://ajaia-docspace-ut5k.onrender.com  
+**Source:** https://github.com/hitnrun30/ajaia-docspace
+
+**Free-tier data retention disclosure:** This assessment demo uses Render Free with a local SQLite file on ephemeral storage. Document edits persist during normal operation and page refreshes, but the database **can be erased when Render redeploys, restarts, spins down or replaces the service instance**. Reviewers should treat their data as temporary. Production deployment would require durable persistent storage or a managed database.
+
 ## Deployment
 
 The app is a single Node.js HTTP service with no frontend build step. Deploy the repository as a Node service on a host supporting Node 22.13+ (e.g. Render). Use `npm start` as the start command. Set `SESSION_SECRET` to a long random value and `DB_PATH` to a writable location.
