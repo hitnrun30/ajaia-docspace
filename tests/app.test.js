@@ -117,3 +117,38 @@ test('existing databases receive a baseline history snapshot on upgrade',async()
   assert.equal(snapshot.revision,7);assert.equal(snapshot.html,'<p>Old</p>');
   reopened.close();
 });
+
+test('HTML and text exports download current authorized document content',async()=>{
+  const made=await req('/api/documents',{method:'POST',body:JSON.stringify({title:'Export Demo'})});
+  const docId=made.body.document.id;
+  const edit=await req(`/api/documents/${docId}`,{method:'PUT',body:JSON.stringify({revision:1,html:'<h2>Progress &amp; plans</h2><ul><li><strong>First</strong> item</li><li>Second item</li></ul>'})});
+  assert.equal(edit.status,200);
+  let response=await fetch(`${base}/api/documents/${docId}/export?format=html`);
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type'),/text\/html/);
+  assert.match(response.headers.get('content-disposition'),/attachment; filename="Export Demo.html"/);
+  const html=await response.text();
+  assert.match(html,/<h2>Progress &amp; plans<\/h2>/);
+  assert.match(html,/<strong>First<\/strong>/);
+  response=await fetch(`${base}/api/documents/${docId}/export?format=txt`);
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type'),/text\/plain/);
+  const txt=await response.text();
+  assert.match(txt,/Progress & plans/);
+  assert.match(txt,/- First item/);
+  assert.match(txt,/- Second item/);
+  assert.doesNotMatch(txt,/<[^>]+>/);
+  assert.equal((await req(`/api/documents/${docId}/export?format=pdf`)).status,400);
+});
+test('export respects sharing permissions and safe filenames',async()=>{
+  const made=await req('/api/documents',{method:'POST',body:JSON.stringify({title:'Risk: Q4 / report'})});
+  const docId=made.body.document.id;
+  const jordan=(await req('/api/switch',{method:'POST',body:JSON.stringify({userId:2})})).cookie.split(';')[0];
+  const sam=(await req('/api/switch',{method:'POST',body:JSON.stringify({userId:3})})).cookie.split(';')[0];
+  let response=await fetch(`${base}/api/documents/${docId}/export?format=txt`,{headers:{Cookie:sam}});
+  assert.equal(response.status,404);
+  await req(`/api/documents/${docId}/share`,{method:'POST',body:JSON.stringify({userId:2,role:'viewer'})});
+  response=await fetch(`${base}/api/documents/${docId}/export?format=txt`,{headers:{Cookie:jordan}});
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-disposition'),/filename="Risk- Q4 - report.txt"/);
+});
