@@ -2,10 +2,9 @@
 
 **Candidate:** Steven Strauss  
 **Project:** Docspace — lightweight collaborative document editor  
-**Submission folder:** https://drive.google.com/drive/folders/1vIITx6qtg8MQRtxZvdZUq6oFfY84gwmw  
 **Live product:** https://ajaia-docspace-ut5k.onrender.com  
 **Source repository:** https://github.com/hitnrun30/ajaia-docspace  
-**Walkthrough video:** NOT YET RECORDED — provide URL in the separate required Video Submission Link field
+**Walkthrough video:** Recorded; Google Drive video URL will be provided in Ajaia's separate **Video Submission Link** field
 
 ## Working implementation
 
@@ -33,13 +32,11 @@ I prioritized one coherent create → edit → persist → share workflow over r
 
 ## AI-native workflow
 
-ChatGPT assisted in decomposing requirements, drafting implementation and UI, writing tests, and preparing documentation. The engineering decisions included rejecting over-scoped real-time editing, preserving permission checks on the server, using revision conflicts instead of silently overwriting edits, and being explicit about demo-only authentication and storage limitations. Automated tests passed; **the user confirmed local browser operation, sharing and file import, and confirmed that the Render deployment opens in their browser; hosted create/save persistence has not been independently verified**. Full details are in `AI_WORKFLOW.md`.
+ChatGPT assisted in decomposing requirements, drafting implementation and UI, writing tests, and preparing documentation. The engineering decisions included rejecting over-scoped real-time editing, preserving permission checks on the server, using revision conflicts instead of silently overwriting edits, and being explicit about demo-only authentication and storage limitations. Eight automated tests passed. Manual testing confirmed the local application and the live Render deployment, including document editing, file importing, and sharing. Full details are in `AI_WORKFLOW.md`.
 
-## Outstanding items before final submission
+## Walkthrough video
 
-- Test creating, saving and reopening a document on the hosted deployment before submission.
-- Record a 3–5 minute walkthrough, upload it, and paste the public link in the form's separate **Video Submission Link** field and into `walkthrough-url.txt`.
-- Confirm the Google Drive folder is accessible to reviewers without requesting access.
+The narrated walkthrough has been recorded. Its shareable Google Drive video URL is supplied separately in Ajaia's **Video Submission Link** field. No project deliverables require access to a Google Drive folder; current code, documentation, and tests are maintained in the public GitHub repository.
 
 ## If another 2–4 hours were available
 
