@@ -11,12 +11,16 @@
 - `ARCHITECTURE.md` — design and prioritization notes.
 - `AI_WORKFLOW.md` — AI usage, judgment, verification.
 - `WALKTHROUGH_SCRIPT.md` — 3–5 minute recording outline.
-- `walkthrough-url.txt` — **requires a recorded video URL before submitting**.
-- `live-url.txt` — **requires a deployed, working HTTPS URL before submitting**.
+- Walkthrough video URL — **requires a recorded video URL before submitting**.
+- Live application — https://ajaia-docspace-ut5k.onrender.com
 
 ## Live deployment
 
-NOT YET DEPLOYED. Replace the placeholder in `live-url.txt` after verifying the public site.
+**Live demo:** https://ajaia-docspace-ut5k.onrender.com  
+**Source:** https://github.com/hitnrun30/ajaia-docspace  
+**Review status:** The user confirmed the deployed app opens correctly in a browser, and verified local sharing and .txt/.md importing. Browser verification of the hosted create/save workflow should be completed before final submission.
+
+**Free-tier storage limitation:** Render Free runs the SQLite file on ephemeral disk. Documents may be lost on redeploy, restart, spin-down or instance replacement; reviewers should not store important data. This is a demo, not durable production hosting.
 
 ## Demo users
 
@@ -24,8 +28,8 @@ Alex Morgan (alex@example.test), Jordan Lee (jordan@example.test), Sam Rivera (s
 
 ## Incomplete / deliberately scoped out
 
-Real production authentication; true simultaneous editing; full DOCX import; persistent deployment on an ephemeral-free hosting plan; browser-verified deployment; video recording.
+Real production authentication; true simultaneous editing; full DOCX import; durable production storage; real authentication; video recording.
 
-## Next 2–4 hours
+## If additional development time were available
 
 TipTap editor, proper auth and invite links, durable managed DB, improved concurrent-edit merge UX.
