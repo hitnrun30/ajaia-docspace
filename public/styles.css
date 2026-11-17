@@ -17,3 +17,5 @@
 .history-preview ul,.history-preview ol{padding-left:22px}
 .history-details .primary{align-self:flex-end;margin-top:13px}
 @media(max-width:650px){.history-modal{padding:19px}.history-layout{grid-template-columns:1fr;overflow:auto}.history-list{max-height:180px}.history-preview{max-height:220px}.editor-bar{gap:7px}.history-btn{padding:9px}}
+
+.export-format{border:1px solid #e5e6f0;border-radius:8px;padding:8px 6px;background:white;color:#4d5064;font-size:12px;max-width:80px}
