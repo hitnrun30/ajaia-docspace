@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Docspace — collaborative documents</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+ <div class="brand"><div class="mark">D<span>✦</span></div><div><b>docspace</b><small>Workspace</small></div></div>
+ <button id="newBtn" class="primary full"><span>＋</span> New document</button>
+ <label class="import-btn full" for="importFile">↥ &nbsp; Import document <input id="importFile" type="file" accept=".txt,.md,text/plain,text/markdown" hidden></label>
+ <p class="nav-caption">YOUR LIBRARY</p>
+ <button class="nav active" data-filter="all">▦ <span>All documents</span> <span class="count" id="allCount">0</span></button>
+ <button class="nav" data-filter="owner">▤ <span>My documents</span></button>
+ <button class="nav" data-filter="shared">♧ <span>Shared with me</span></button>
+ <div class="sidebar-bottom"><p class="caption">DEMO ACCOUNT</p><select id="userSelect" aria-label="Switch demo account"></select><p class="hint">Switch users to test sharing. Accounts are simulated for this demo.</p></div>
+</aside>
+<main class="main">
+ <header class="topbar"><div class="eyebrow">TEAM WORKSPACE <span class="slash">/</span> DOCUMENTS</div><span class="top-indicator"><span class="live-dot"></span> Local-first demo</span></header>
+ <section id="homeView" class="home content">
+   <div class="hero"><div><p class="eyebrow">WORK BETTER, TOGETHER</p><h1>All your ideas,<br><em>one workspace.</em></h1><p class="subtitle">Create, format, and share documents without the clutter.</p><div class="hero-actions"><button class="primary" id="heroNew">＋ &nbsp; Create document</button><label class="secondary" for="importFile">↥ &nbsp; Import .txt or .md</label></div></div><div class="hero-art" aria-hidden="true"><div class="floating-page"><span class="page-dot"></span><i></i><i></i><i class="short"></i><div class="page-block"></div><i></i><i class="mid"></i></div><span class="star star-one">✦</span><span class="star star-two">✳</span></div></div>
+   <div class="section-heading"><div><h2>Your documents</h2><p id="listSubtitle">Everything you're working on</p></div><div class="searchbox"><span>⌕</span><input id="searchInput" aria-label="Search documents" placeholder="Search documents..."></div></div>
+   <div id="docGrid" class="doc-grid"></div>
+   <div id="emptyState" class="empty hidden"><div class="empty-symbol">▤</div><h3>No documents here yet</h3><p>Create something new or import a file to get started.</p></div>
+ </section>
+ <section id="editorView" class="editor-view hidden">
+  <div class="editor-bar"><button id="backBtn" class="back" title="Back to documents">←</button><div class="editor-heading"><input id="titleInput" maxlength="120" aria-label="Document title"><div class="meta"><span id="permissionLabel"></span> <span class="dot-sep">·</span> <span id="saveStatus" aria-live="polite">Saved</span></div></div><button id="shareBtn" class="primary small">♧ &nbsp; Share</button></div>
+  <div class="toolbar" id="toolbar" aria-label="Formatting toolbar"><button data-command="bold" title="Bold (Ctrl+B)"><b>B</b></button><button data-command="italic" title="Italic (Ctrl+I)"><i>I</i></button><button data-command="underline" title="Underline (Ctrl+U)"><u>U</u></button><span class="tool-divider"></span><select id="blockSelect" aria-label="Paragraph style"><option value="p">Normal text</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option></select><span class="tool-divider"></span><button data-command="insertUnorderedList" title="Bulleted list">☷</button><button data-command="insertOrderedList" title="Numbered list">☰</button><span class="tool-divider"></span><button data-command="removeFormat" title="Clear formatting">Tx</button></div>
+  <div class="paper-wrap"><article id="editor" class="paper" contenteditable="true" role="textbox" aria-label="Document content" aria-multiline="true" spellcheck="true"></article><div id="readOnlyBanner" class="read-only hidden">Read-only document. Ask the owner for editor access.</div></div>
+  <div class="editor-footer"><span>⌘ Document workspace</span><span id="wordCount">0 words</span></div>
+ </section>
+</main>
+</div>
+<div id="modal" class="modal-overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-top"><div><p class="eyebrow">COLLABORATE</p><h2 id="modalTitle">Share document</h2></div><button id="closeModal" class="icon-close" aria-label="Close">✕</button></div><p class="modal-sub">Give a teammate access to this document.</p><form id="shareForm"><label class="field-label" for="shareUser">Invite teammate</label><select id="shareUser"></select><label class="field-label" for="shareRole">Permission</label><select id="shareRole"><option value="editor">Can edit</option><option value="viewer">Can view</option></select><button class="primary full" type="submit">Share document</button></form><h3 class="shared-heading">People with access</h3><div id="shareList"></div></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js" type="module"></script>
+</body></html>

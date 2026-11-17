@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: docspace-ajaia-demo
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DB_PATH
+        value: ./data/docspace.sqlite

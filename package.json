@@ -1,0 +1,9 @@
+{
+  "name": "docspace-ajaia-assessment",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lightweight multi-user document editor with SQLite, file import and sharing",
+  "type": "module",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": { "start": "node src/server.js", "test": "node --test" }
+}
