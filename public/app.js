@@ -23,7 +23,15 @@ async function back(){await flush();if(state.dirty){toast('Changes not saved. Pl
 async function showShare(){if(state.doc?.role!=='owner')return;await flush();$('shareUser').innerHTML=state.users.filter(u=>u.id!==state.user.id).map(u=>`<option value="${u.id}">${esc(u.name)} (${esc(u.email)})</option>`).join('');await loadShares();$('modal').classList.remove('hidden');}
 async function loadShares(){const {shares}=await api(`/api/documents/${state.doc.id}/shares`);$('shareList').innerHTML=`<div class="person"><b>${esc(state.user.name)} (you)</b><span>Owner</span></div>`+shares.map(s=>`<div class="person"><b>${esc(s.name)}</b><span>${s.role==='editor'?'Can edit':'Can view'}</span></div>`).join('');}
 $('newBtn').addEventListener('click',create);$('heroNew').addEventListener('click',create);$('backBtn').addEventListener('click',back);$('searchInput').addEventListener('input',renderList);
-document.querySelectorAll('[data-filter]').forEach(el=>el.addEventListener('click',()=>{state.filter=el.dataset.filter;document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===el));renderList();}));
+document.querySelectorAll('[data-filter]').forEach(el=>el.addEventListener('click',async()=>{
+ if(!$('editorView').classList.contains('hidden')){
+  await back();
+  if(state.doc)return; // Stay in the editor if saving failed.
+ }
+ state.filter=el.dataset.filter;
+ document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===el));
+ renderList();
+}));
 $('editor').addEventListener('input',markDirty);$('titleInput').addEventListener('input',markDirty);$('shareBtn').addEventListener('click',showShare);$('closeModal').addEventListener('click',()=>$('modal').classList.add('hidden'));
 $('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.add('hidden');});
 $('shareForm').addEventListener('submit',async e=>{e.preventDefault();try{await api(`/api/documents/${state.doc.id}/share`,{method:'POST',body:JSON.stringify({userId:Number($('shareUser').value),role:$('shareRole').value})});await loadShares();toast('Sharing updated');}catch(err){toast(err.message);}});
