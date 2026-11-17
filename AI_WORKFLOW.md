@@ -24,6 +24,8 @@ OpenAI ChatGPT (GPT-6) assisted with scope decomposition, implementation drafts,
 - Ran built-in automated integration tests, including an authorization test for viewer updates and conflict handling.
 - Exercised the API against a temporary SQLite store.
 - Inspected generated source and documentation for setup consistency.
-- A browser launch was attempted but local browsing was blocked by the execution environment; frontend interaction and externally hosted availability must be verified separately before claiming completion.
+- The initial Windows browser launch surfaced a static-path bug; the server's static-file handling was corrected and a homepage regression test added, increasing automated coverage to eight tests.
+- The user manually confirmed the corrected application opened locally, verified sharing and file import, and confirmed that the hosted Render URL opens in a browser.
+- The Render Free deployment uses ephemeral SQLite storage. Data can be lost after spin-down, restart, redeployment, or instance replacement; production use requires durable storage.
 
 AI accelerated construction; correctness and tradeoff accountability remain the candidate's responsibility. This note should be amended to reflect any additional manual changes or tests performed after handoff.
