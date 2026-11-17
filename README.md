@@ -10,8 +10,8 @@ A deliberately focused Google Docs–inspired application. Built for the Ajaia A
 - Owner/editor/viewer document permissions. Three selectable seeded demo accounts.
 - A distinct **My documents** and **Shared with me** library view.
 - SQLite persistence with server-side permission enforcement and optimistic revision conflict handling.
-- Version history: preview previous saved revisions and restore one as a new revision.
-- Responsive interface, save feedback, validation, error handling, and API tests.
+- **Version history**: browse saved revisions, preview the title and formatted contents, and restore an earlier revision without erasing later history.
+- Responsive interface, save feedback, validation, error handling, and automated integration tests (including frontend file serving).
 
 ## Requirements and local setup
 
@@ -45,18 +45,15 @@ The account selector is intentionally **simulated authentication**, not security
 
 ## Version history
 
-Open a document and click **History** to browse saved revisions, including who saved each version and when. Select a revision to preview its title and formatted content. Owners and editors can restore an older version; this creates a **new** revision and preserves later revisions. Viewers can inspect but not restore. Existing SQLite databases get a baseline snapshot when the app updates.
+Open a document and click **History**. Each successful save creates a numbered version with a timestamp and the demo account that saved it. Select a version to preview its contents; owners and editors can choose **Restore this version** to create a new revision using the older title and content. Viewers may inspect history but cannot restore. Existing documents gain a baseline snapshot automatically when the database schema upgrades.
+
+## File export
+
+With a document open, choose **HTML** or **Text** and click **Export**. HTML preserves headings, lists and emphasis, while plain text is universally compatible. Only users who can access a document can export it, including read-only viewers. Exports download locally and do not modify the document or its version history.
 
 ## File import
 
 Use **Import document**. The app accepts `.txt` and `.md` UTF-8 text only. Markdown support is deliberately limited to headings, paragraphs, numbered/bulleted lists, bold, and italic; it is not a full CommonMark parser. `.docx` is not supported in this timebox. Imported files become editable database records.
-
-## Live demo
-
-**Application:** https://ajaia-docspace-ut5k.onrender.com  
-**Source:** https://github.com/hitnrun30/ajaia-docspace
-
-**Free-tier data retention disclosure:** This assessment demo uses Render Free with a local SQLite file on ephemeral storage. Document edits persist during normal operation and page refreshes, but the database **can be erased when Render redeploys, restarts, spins down or replaces the service instance**. Reviewers should treat their data as temporary. Production deployment would require durable persistent storage or a managed database.
 
 ## Deployment
 
